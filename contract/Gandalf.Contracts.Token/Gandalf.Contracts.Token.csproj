@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>Gandalf.Contracts.Token</RootNamespace>
+        <IsContract>true</IsContract>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    <ItemGroup>
+        <ContractCode Include="..\..\protobuf\gandalf_token_contract.proto">
+            <Link>Protobuf\Proto\gandalf_token_contract.proto</Link>
+        </ContractCode>
+    </ItemGroup>
+</Project>
