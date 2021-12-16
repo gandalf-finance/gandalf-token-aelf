@@ -19,6 +19,8 @@ service TokenContract {
     option (aelf.base) = "acs2.proto";
 
     // Actions
+    rpc Initialize (InitializeInput) returns (google.protobuf.Empty) {
+    }
     rpc Create (CreateInput) returns (google.protobuf.Empty) {
     }
     rpc Issue (IssueInput) returns (google.protobuf.Empty) {
@@ -46,6 +48,7 @@ service TokenContract {
     }
 }
 
+// Structs
 message TokenInfo {
     string symbol = 1;
     string token_name = 2;
@@ -54,8 +57,22 @@ message TokenInfo {
     int32 decimals = 5;
     aelf.Address issuer = 6;
     bool is_burnable = 7;
-    int32 issue_chain_id = 9;
-    int64 issued = 10;
+    int64 issued = 8;
+    ExternalInfo external_info = 9;
+}
+
+message ExternalInfo {
+    map<string, string> value = 1;
+}
+
+message CallbackInfo {
+    aelf.Address contract_address = 1;
+    string method_name = 2;
+}
+
+// Inputs
+message InitializeInput {
+    aelf.Address owner = 1;
 }
 
 message CreateInput {
@@ -65,8 +82,7 @@ message CreateInput {
     int32 decimals = 4;
     aelf.Address issuer = 5;
     bool is_burnable = 6;
-    repeated aelf.Address lock_white_list = 7;
-    int32 issue_chain_id = 8;
+    ExternalInfo external_info = 7;
 }
 
 message IssueInput {
@@ -129,6 +145,7 @@ message GetAllowanceInput {
     aelf.Address spender = 3;
 }
 
+// Outputs
 message GetAllowanceOutput {
     string symbol = 1;
     aelf.Address owner = 2;
@@ -163,8 +180,7 @@ message UnApproved {
     int64 amount = 4;
 }
 
-message Burned
-{
+message Burned {
     option (aelf.is_event) = true;
     aelf.Address burner = 1 [(aelf.is_indexed) = true];
     string symbol = 2 [(aelf.is_indexed) = true];
@@ -179,7 +195,7 @@ message TokenCreated {
     int32 decimals = 4;
     aelf.Address issuer = 5;
     bool is_burnable = 6;
-    int32 issue_chain_id = 7;
+    ExternalInfo external_info = 7;
 }
 
 message Issued {
