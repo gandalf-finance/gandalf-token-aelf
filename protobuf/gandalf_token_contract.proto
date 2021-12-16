@@ -1,16 +1,22 @@
 syntax = "proto3";
 
-package token;
-
 import "aelf/core.proto";
 import "aelf/options.proto";
+
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
+
+import "acs1.proto";
+import "acs2.proto";
+import "transaction_fee.proto";
+import "authority_info.proto";
 
 option csharp_namespace = "Gandalf.Contracts.Token";
 
 service TokenContract {
     option (aelf.csharp_state) = "Gandalf.Contracts.Token.TokenContractState";
+    option (aelf.base) = "acs1.proto";
+    option (aelf.base) = "acs2.proto";
 
     // Actions
     rpc Create (CreateInput) returns (google.protobuf.Empty) {

@@ -1,6 +1,7 @@
 namespace Gandalf.Contracts.Token
 {
-    public class TokenContract : TokenContractContainer.TokenContractBase
+    public partial class TokenContract : TokenContractContainer.TokenContractBase
     {
+        
     }
 }
