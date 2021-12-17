@@ -11,7 +11,7 @@ namespace Gandalf.Contracts.Token
         {
             if (State.Owner.Value != null)
             {
-                Assert(Context.Sender == State.Owner.Value, "Only owner can create new tokens.");
+                AssertSenderIsOwner();
             }
 
             Assert(!string.IsNullOrWhiteSpace(input.Symbol), "Invalid symbol.");

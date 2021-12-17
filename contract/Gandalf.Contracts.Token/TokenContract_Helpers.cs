@@ -79,5 +79,10 @@ namespace Gandalf.Contracts.Token
                 });
             }
         }
+
+        private void AssertSenderIsOwner()
+        {
+            Assert(Context.Sender == State.Owner.Value, "No permission.");
+        }
     }
 }
