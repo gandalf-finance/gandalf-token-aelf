@@ -2,22 +2,38 @@ namespace Gandalf.Contracts.Token
 {
     public partial class TokenContract
     {
-        public override GetBalanceOutput GetBalance(GetBalanceInput input)
+        public override Balance GetBalance(GetBalanceInput input)
         {
             var owner = input.Owner ?? Context.Sender;
-            return new GetBalanceOutput
+            return new Balance
             {
-                Balance = State.BalanceMap[owner][input.Symbol],
+                Amount = State.BalanceMap[owner][input.Symbol],
                 Owner = owner,
                 Symbol = input.Symbol
             };
         }
 
-        public override GetAllowanceOutput GetAllowance(GetAllowanceInput input)
+        public override Balances GetBalances(GetBalancesInput input)
         {
-            return new GetAllowanceOutput
+            var owner = input.Owner ?? Context.Sender;
+            var balances = new Balances();
+            foreach (var symbol in input.Symbols)
             {
-                Allowance = State.AllowanceMap[input.Owner][input.Spender][input.Symbol],
+                balances.Value.Add(GetBalance(new GetBalanceInput
+                {
+                    Symbol = symbol,
+                    Owner = owner
+                }));
+            }
+
+            return balances;
+        }
+
+        public override Allowance GetAllowance(GetAllowanceInput input)
+        {
+            return new Allowance
+            {
+                Amount = State.AllowanceMap[input.Owner][input.Spender][input.Symbol],
                 Owner = input.Owner,
                 Spender = input.Spender,
                 Symbol = input.Symbol
