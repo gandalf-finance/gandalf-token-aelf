@@ -39,7 +39,7 @@ namespace Gandalf.Contracts.Token
 
             foreach (var symbolToAmount in input.Fees)
             {
-                ValidTokenInfo(symbolToAmount.Symbol, symbolToAmount.BasicFee);
+                ValidTokenExisting(symbolToAmount.Symbol);
             }
 
             State.TransactionFeesMap[input.MethodName] = input;

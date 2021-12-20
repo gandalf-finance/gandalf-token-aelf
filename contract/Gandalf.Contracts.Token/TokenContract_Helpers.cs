@@ -20,9 +20,8 @@ namespace Gandalf.Contracts.Token
             State.BalanceMap[address][symbol] = target;
         }
 
-        private TokenInfo ValidTokenInfo(string symbol, long amount)
+        private TokenInfo ValidTokenExisting(string symbol)
         {
-            Assert(amount > 0, "Invalid amount.");
             var tokenInfo = State.TokenInfoMap[symbol];
             if (tokenInfo == null)
             {

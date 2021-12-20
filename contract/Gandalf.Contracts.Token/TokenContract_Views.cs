@@ -1,3 +1,6 @@
+using AElf.Types;
+using Google.Protobuf.WellKnownTypes;
+
 namespace Gandalf.Contracts.Token
 {
     public partial class TokenContract
@@ -43,6 +46,11 @@ namespace Gandalf.Contracts.Token
         public override TokenInfo GetTokenInfo(GetTokenInfoInput input)
         {
             return State.TokenInfoMap[input.Symbol];
+        }
+
+        public override Address GetOwner(Empty input)
+        {
+            return State.Owner.Value;
         }
     }
 }

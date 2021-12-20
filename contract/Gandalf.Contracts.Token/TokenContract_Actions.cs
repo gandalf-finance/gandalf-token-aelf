@@ -47,8 +47,9 @@ namespace Gandalf.Contracts.Token
 
         public override Empty Issue(IssueInput input)
         {
+            if (input.Amount <= 0) return new Empty();
             Assert(input.To != null, "To address not filled.");
-            var tokenInfo = ValidTokenInfo(input.Symbol, input.Amount);
+            var tokenInfo = ValidTokenExisting(input.Symbol);
             tokenInfo.Issued = tokenInfo.Issued.Add(input.Amount);
             tokenInfo.Supply = tokenInfo.Supply.Add(input.Amount);
 
@@ -68,7 +69,8 @@ namespace Gandalf.Contracts.Token
 
         public override Empty Transfer(TransferInput input)
         {
-            ValidTokenInfo(input.Symbol, input.Amount);
+            if (input.Amount <= 0) return new Empty();
+            ValidTokenExisting(input.Symbol);
             DoTransfer(Context.Sender, input.To, input.Symbol, input.Amount, input.Memo);
             DealWithExternalInfoDuringTransfer(new TransferFromInput
             {
@@ -83,7 +85,8 @@ namespace Gandalf.Contracts.Token
 
         public override Empty TransferFrom(TransferFromInput input)
         {
-            ValidTokenInfo(input.Symbol, input.Amount);
+            if (input.Amount <= 0) return new Empty();
+            ValidTokenExisting(input.Symbol);
             var allowance = State.AllowanceMap[input.From][Context.Sender][input.Symbol];
             if (allowance < input.Amount)
             {
@@ -100,7 +103,8 @@ namespace Gandalf.Contracts.Token
 
         public override Empty Approve(ApproveInput input)
         {
-            ValidTokenInfo(input.Symbol, input.Amount);
+            if (input.Amount <= 0) return new Empty();
+            ValidTokenExisting(input.Symbol);
             State.AllowanceMap[Context.Sender][input.Spender][input.Symbol] =
                 State.AllowanceMap[Context.Sender][input.Spender][input.Symbol].Add(input.Amount);
             Context.Fire(new Approved
@@ -115,7 +119,8 @@ namespace Gandalf.Contracts.Token
 
         public override Empty UnApprove(UnApproveInput input)
         {
-            ValidTokenInfo(input.Symbol, input.Amount);
+            if (input.Amount <= 0) return new Empty();
+            ValidTokenExisting(input.Symbol);
             var oldAllowance = State.AllowanceMap[Context.Sender][input.Spender][input.Symbol];
             var amountOrAll = Math.Min(input.Amount, oldAllowance);
             State.AllowanceMap[Context.Sender][input.Spender][input.Symbol] = oldAllowance.Sub(amountOrAll);
@@ -131,7 +136,8 @@ namespace Gandalf.Contracts.Token
 
         public override Empty Burn(BurnInput input)
         {
-            var tokenInfo = ValidTokenInfo(input.Symbol, input.Amount);
+            if (input.Amount <= 0) return new Empty();
+            var tokenInfo = ValidTokenExisting(input.Symbol);
             Assert(tokenInfo.IsBurnable, "The token is not burnable.");
             ModifyBalance(Context.Sender, input.Symbol, -input.Amount);
             tokenInfo.Supply = tokenInfo.Supply.Sub(input.Amount);
@@ -140,6 +146,20 @@ namespace Gandalf.Contracts.Token
                 Burner = Context.Sender,
                 Symbol = input.Symbol,
                 Amount = input.Amount
+            });
+            return new Empty();
+        }
+
+        public override Empty ResetExternalInfo(ResetExternalInfoInput input)
+        {
+            var tokenInfo = State.TokenInfoMap[input.Symbol];
+            Assert(tokenInfo.Issuer == Context.Sender, "No permission to reset external info.");
+            tokenInfo.ExternalInfo = input.ExternalInfo;
+            State.TokenInfoMap[input.Symbol] = tokenInfo;
+            Context.Fire(new ExternalInfoChanged
+            {
+                Symbol = input.Symbol,
+                ExternalInfo = input.ExternalInfo
             });
             return new Empty();
         }

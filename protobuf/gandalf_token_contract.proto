@@ -35,6 +35,8 @@ service TokenContract {
     }
     rpc Burn (BurnInput) returns (google.protobuf.Empty) {
     }
+    rpc ResetExternalInfo (ResetExternalInfoInput) returns (google.protobuf.Empty){
+    }
 
     // Views
     rpc GetTokenInfo (GetTokenInfoInput) returns (TokenInfo) {
@@ -47,6 +49,9 @@ service TokenContract {
         option (aelf.is_view) = true;
     }
     rpc GetAllowance (GetAllowanceInput) returns (Allowance) {
+        option (aelf.is_view) = true;
+    }
+    rpc GetOwner (google.protobuf.Empty) returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
 }
@@ -164,6 +169,11 @@ message GetAllowanceInput {
     aelf.Address spender = 3;
 }
 
+message ResetExternalInfoInput {
+    string symbol = 1;
+    ExternalInfo external_info = 2;
+}
+
 // Events
 
 message Transferred {
@@ -215,4 +225,10 @@ message Issued {
     int64 amount = 2;
     string memo = 3;
     aelf.Address to = 4;
+}
+
+message ExternalInfoChanged {
+    option (aelf.is_event) = true;
+    string symbol = 1;
+    ExternalInfo external_info = 2;
 }
